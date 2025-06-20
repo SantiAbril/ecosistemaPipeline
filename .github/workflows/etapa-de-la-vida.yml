@@ -26,7 +26,7 @@ on:
     - test/*
     - feature/ecosistemapipeline
 jobs:
-  suma:
+  calculo de edad:
     runs-on: ubuntu-latest
     outputs:
       edad: ${{ steps.calcular_edad.outputs.edad }}
