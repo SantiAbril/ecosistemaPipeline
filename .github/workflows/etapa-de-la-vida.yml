@@ -1,0 +1,63 @@
+#Crear un pipeline que reciba como inputs el año mes y día de nacimiento 
+#y con base a esos datos calcule la edad actual de la persona (Formato: 27 años, 9 meses, 17 días) 
+#y luego use esa edad para clasificar a la persona en la etapa de la vida que aplique.
+
+#La ejecución fue exitosa en Github actions
+#El workflow tiene un nombre
+#El workflow usa el runner de ubuntu-latest
+#El workflow usa el evento workflow_dispatch
+#El workflow tiene tres inputs, día, mes y año de nacimiento
+#El workflow usa las variables de entorno del repositorio (Rangos de edades)
+#El workflow usa dos jobs y un step en cada job
+#Los steps y los jobs tienen un nombre
+#El workflow es claro, entendible y efectivo
+#El primer job debe tener un output el cual se debe usar en el segundo job
+#Variables de repositorio:
+
+#LIM_NINEZ = 13
+#LIM_ADOLESCENCIA = 17
+#LIM_ADULTO_JOVEN = 35
+#LIM_ADULTO = 64
+
+name: etapa-de-la-vida
+on:
+ push:
+  branches:
+    - test/*
+    - feature/ecosistemapipeline
+jobs:
+  suma:
+    runs-on: ubuntu-latest
+    outputs:
+      edad: ${{ steps.calcular_edad.outputs.edad }}
+    steps:
+      - name: Calcular edad
+        id: calcular_edad
+        run: |
+          DIA_NACIMIENTO=${{ inputs.dia }}
+          MES_NACIMIENTO=${{ inputs.mes }}
+          ANIO_NACIMIENTO=${{ inputs.anio }}
+          
+          # Obtener la fecha actual
+          FECHA_ACTUAL=$(date +%Y-%m-%d)
+          ANIO_ACTUAL=$(echo $FECHA_ACTUAL | cut -d'-' -f1)
+          MES_ACTUAL=$(echo $FECHA_ACTUAL | cut -d'-' -f2)
+          DIA_ACTUAL=$(echo $FECHA_ACTUAL | cut -d'-' -f3)
+
+          # Calcular la edad
+          EDAD_ANIOS=$((ANIO_ACTUAL - ANIO_NACIMIENTO))
+          EDAD_MESES=$((MES_ACTUAL - MES_NACIMIENTO))
+          EDAD_DIAS=$((DIA_ACTUAL - DIA_NACIMIENTO))
+
+          if [ $EDAD_DIAS -lt 0 ]; then
+            EDAD_MESES=$((EDAD_MESES - 1))
+            EDAD_DIAS=$((EDAD_DIAS + 30)) # Aproximación de días en un mes
+          fi
+
+          if [ $EDAD_MESES -lt 0 ]; then
+            EDAD_ANIOS=$((EDAD_ANIOS - 1))
+            EDAD_MESES=$((EDAD_MESES + 12))
+          fi
+
+          echo "edad=${EDAD_ANIOS} años, ${EDAD_MESES} meses, ${EDAD_DIAS} días" >> "$GITHUB_OUTPUT"
+          echo "Edad calculada: ${EDAD_ANIOS} años, ${EDAD_MESES} meses, ${EDAD_DIAS} días"

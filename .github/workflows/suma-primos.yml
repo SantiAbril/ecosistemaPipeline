@@ -14,7 +14,7 @@ on:
   push:
     branches:
       - test/*
-      - feature/ecosistemapipeline
+  
 jobs:
   definir_numero:
     runs-on: ubuntu-latest
