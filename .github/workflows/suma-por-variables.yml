@@ -26,7 +26,7 @@ jobs:
       - name: Sumar dos números
         id: sumar
         run: |
-          NUM1=4
+          NUM1=6
           NUM2=4
           RESULTADO=$((NUM1 + NUM2))
           echo "total=$RESULTADO" >> "$GITHUB_OUTPUT"
