@@ -24,7 +24,7 @@ jobs:
       - name: Definir número
         id: set_number
         run: |
-          NUMERO=7
+          NUMERO=8
           echo "numero=$NUMERO" >> "$GITHUB_OUTPUT"
           echo "Número definido: $NUMERO"
 
