@@ -1,3 +1,24 @@
+#Crear un pipeline que reciba como inputs el año mes y día de nacimiento 
+#y con base a esos datos calcule la edad actual de la persona (Formato: 27 años, 9 meses, 17 días) 
+#y luego use esa edad para clasificar a la persona en la etapa de la vida que aplique.
+
+#La ejecución fue exitosa en Github actions
+#El workflow tiene un nombre
+#El workflow usa el runner de ubuntu-latest
+#El workflow usa el evento workflow_dispatch
+#El workflow tiene tres inputs, día, mes y año de nacimiento
+#El workflow usa las variables de entorno del repositorio (Rangos de edades)
+#El workflow usa dos jobs y un step en cada job
+#Los steps y los jobs tienen un nombre
+#El workflow es claro, entendible y efectivo
+#El primer job debe tener un output el cual se debe usar en el segundo job
+#Variables de repositorio:
+
+#LIM_NINEZ = 13
+#LIM_ADOLESCENCIA = 17
+#LIM_ADULTO_JOVEN = 35
+#LIM_ADULTO = 64
+
 name: calcular-edad-y-etapa-de-la-vida
 
 on:
