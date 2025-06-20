@@ -1,0 +1,47 @@
+#Crear un pipeline que sume dos numeros dados por variables de entorno en Github y
+#que muestre un mensaje dependiendo de si el resultado de la suma mayor a 10 o menor/igual a 10.
+ 
+#La ejecucion fue exitosa en Github actions ok
+#El workflow tiene un nombre ok
+#El workflow usa el runner de ubuntu-latest ok
+#El workflow usa el evento push ok
+#El workflow tiene en el desencadenador el filtro de rama para cualquier nombre que empiece por test/ ok (mi rama es feature)
+#El workflow usa las variables de entorno del repositorio ok
+#El workflow usa dos jobs y un step en cada job ok
+#Los steps y los jobs tienen un nombre ok
+#El workflow es claro, entendible y efectivo ok
+
+name: suma-dos-numeros
+on:
+# push:
+  #branches:
+   # - test/*
+jobs:
+  suma:
+    runs-on: ubuntu-latest
+    outputs:
+      valorfinal: ${{ steps.sumar.outputs.total }}
+
+    steps:
+      - name: Sumar dos números
+        id: sumar
+        run: |
+          RESULTADO=$((${{vars.NUMERO_UNO}} + ${{vars.NUMERO_DOS}}))
+          echo "total=$RESULTADO" >> "$GITHUB_OUTPUT"
+          echo "La suma de ${{vars.NUMERO_UNO}} y ${{vars.NUMERO_DOS}} es: $RESULTADO"
+
+  validacion:
+    runs-on: ubuntu-latest
+    needs: suma
+    steps:        
+      - name: Comparación de resultados
+        run: |
+          echo "DEBUG: ${{ needs.suma.outputs.valorfinal }}"
+          if [ ${{needs.suma.outputs.valorfinal}} -gt 10 ]; then
+            echo "El resultado ${{needs.suma.outputs.valorfinal}} es mayor 10."
+          else
+            echo "El resultado ${{needs.suma.outputs.valorfinal}} es menor o igual a 10."
+          fi
+          
+
+          
