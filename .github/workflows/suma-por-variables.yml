@@ -29,7 +29,7 @@ jobs:
           NUM1=4
           NUM2=4
           RESULTADO=$((NUM1 + NUM2))
-          echo "total=RESULTADO" >> "$GITHUB_OUTPUT"
+          echo "total=$RESULTADO" >> "$GITHUB_OUTPUT"
           echo "La suma de $NUM1 y $NUM2 es: $RESULTADO"
 
   validacion:
