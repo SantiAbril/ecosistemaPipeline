@@ -24,7 +24,7 @@ name: etapa-de-la-vida
 on:
  push:
   branches:
-    - test/*
+    - master
     - feature/ecosistemapipeline
     
   workflow_dispatch:
@@ -59,9 +59,9 @@ jobs:
       - name: Calcular edad
         id: calcular
         run: |
-          DIA_NAC= 02
-          MES_NAC= 10
-          ANIO_NAC= 1995
+          DIA_NAC=${{ inputs.dia }}
+          MES_NAC=${{ inputs.mes }}
+          ANIO_NAC=${{ inputs.anio }}
 
           FECHA_ACTUAL=$(date +%Y-%m-%d)
           ANIO_ACTUAL=$(date +%Y)
