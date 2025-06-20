@@ -24,8 +24,7 @@ name: etapa-de-la-vida
 on:
  push:
   branches:
-    - master
-    - feature/ecosistemapipeline
+
     
   workflow_dispatch:
     inputs:

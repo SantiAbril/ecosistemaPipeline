@@ -14,7 +14,6 @@ on:
         required: true
 
 env:
-  # Estas variables deben estar también creadas en GitHub repo > Settings > Variables
   LIM_NINEZ: 13
   LIM_ADOLESCENCIA: 17
   LIM_ADULTO_JOVEN: 35
