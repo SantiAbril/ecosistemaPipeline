@@ -1,0 +1,32 @@
+#Crear un pipeline que reciba como inputs el año mes y día de nacimiento colocandolo como variables de entorno
+#y con base a esos datos calcule la edad actual de la persona (Formato: 27 años, 9 meses, 17 días) 
+
+name: Calcular edad
+        run: |
+          DIA_NACIMIENTO=${{ inputs.dia }}
+          MES_NACIMIENTO=${{ inputs.mes }}
+          ANIO_NACIMIENTO=${{ inputs.anio }}
+          
+          # Obtener la fecha actual
+          FECHA_ACTUAL=$(date +%Y-%m-%d)
+          ANIO_ACTUAL=$(echo $FECHA_ACTUAL | cut -d'-' -f1)
+          MES_ACTUAL=$(echo $FECHA_ACTUAL | cut -d'-' -f2)
+          DIA_ACTUAL=$(echo $FECHA_ACTUAL | cut -d'-' -f3)
+
+          # Calcular la edad
+          EDAD_ANIOS=$((ANIO_ACTUAL - ANIO_NACIMIENTO))
+          EDAD_MESES=$((MES_ACTUAL - MES_NACIMIENTO))
+          EDAD_DIAS=$((DIA_ACTUAL - DIA_NACIMIENTO))
+
+          if [ $EDAD_DIAS -lt 0 ]; then
+            EDAD_MESES=$((EDAD_MESES - 1))
+            EDAD_DIAS=$((EDAD_DIAS + 30)) # Aproximación de días en un mes
+          fi
+
+          if [ $EDAD_MESES -lt 0 ]; then
+            EDAD_ANIOS=$((EDAD_ANIOS - 1))
+            EDAD_MESES=$((EDAD_MESES + 12))
+          fi
+
+          echo "edad_formato=${EDAD_ANIOS} años, ${EDAD_MESES} meses, ${EDAD_DIAS} días" >> "$GITHUB_OUTPUT"
+          echo "edad_anios=${EDAD_ANIOS}" >> "$GITHUB_OUTPUT"
