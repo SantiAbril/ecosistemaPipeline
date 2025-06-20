@@ -19,7 +19,7 @@ on:
 jobs:
   suma:
     runs-on: ubuntu-latest
-    output:
+    outputs:
       valorfinal: ${{ steps.sumar.outputs.total }}
 
     steps:
