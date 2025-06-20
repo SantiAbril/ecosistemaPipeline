@@ -1,0 +1,16 @@
+name: suma-dos-numeros
+on:
+ push:
+  branches:
+    - feature/ecosistemapipeline
+jobs:
+  suma:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sumar dos números
+        run: |
+          NUM1=5
+          NUM2=10
+          SUMA=$((NUM1 + NUM2))
+          
+          
