@@ -24,7 +24,7 @@ on:
  push:
   branches:
     - test/*
-    - feature/ecosistemapipeline
+    #- feature/ecosistemapipeline
 jobs:
   calculo_edad:
     runs-on: ubuntu-latest
