@@ -38,7 +38,7 @@ jobs:
     steps:        
       - name: Comparación de resultados
         run: |
-          if [ ${{needs.sumar.outputs.total}} -gt 10 ]; then
+          if [ ${{needs.sumar.outputs.valorfinal}} -gt 10 ]; then
             echo "El resultado ${{needs.sumar.outputs.valorfinal}} es menor o igual a 10."
           else
             echo "El resultado ${{needs.sumar.outputs.valorfinal}} es mayor 10."
