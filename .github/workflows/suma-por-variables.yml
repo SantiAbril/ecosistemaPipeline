@@ -12,5 +12,6 @@ jobs:
           NUM1=5
           NUM2=10
           SUMA=$((NUM1 + NUM2))
-          
+          echo "La suma de $NUM1 y $NUM2 es: $SUMA"
+
           
