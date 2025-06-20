@@ -16,7 +16,6 @@ on:
  push:
   branches:
     - test/*
-    - feature/ecosistemapipeline
 jobs:
   suma:
     runs-on: ubuntu-latest
