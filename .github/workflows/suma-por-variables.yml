@@ -6,10 +6,10 @@
 #El workflow usa el runner de ubuntu-latest ok
 #El workflow usa el evento push ok
 #El workflow tiene en el desencadenador el filtro de rama para cualquier nombre que empiece por test/ ok (mi rama es feature)
-#El workflow usa las variables de entorno del repositorio 
-#El workflow usa dos jobs y un step en cada job
-#Los steps y los jobs tienen un nombre
-#El workflow es claro, entendible y efectivo
+#El workflow usa las variables de entorno del repositorio ok
+#El workflow usa dos jobs y un step en cada job ok
+#Los steps y los jobs tienen un nombre ok
+#El workflow es claro, entendible y efectivo ok
 
 name: suma-dos-numeros
 on:

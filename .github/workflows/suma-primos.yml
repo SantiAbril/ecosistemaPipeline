@@ -1,0 +1,61 @@
+#🧪 Ejercicio de práctica: Pipeline con múltiples jobs y comunicación entre ellos
+ 
+#🎯 Objetivo:
+#Crear un pipeline con 3 jobs que utilicen variables, outputs y realicen comparaciones entre valores.
+ 
+#🛠️ Requisitos:
+#El pipeline debe ejecutarse con el evento push.
+#El primer job define un número y lo pasa al segundo job mediante outputs.
+#El segundo job debe validar si ese número es primo.
+#El tercer job define un nombre por variable de entorno (Nefertiti) y lo compara con el valor "Venus"
+
+name: suma-primos
+on:
+  push:
+    branches:
+      - test/*
+      - feature/ecosistemapipeline
+jobs:
+  definir_numero:
+    runs-on: ubuntu-latest
+    outputs:
+      numero: ${{ steps.set_number.outputs.numero }}
+    steps:
+      - name: Definir número
+        id: set_number
+        run: |
+          NUMERO=7
+          echo "numero=$NUMERO" >> "$GITHUB_OUTPUT"
+          echo "Número definido: $NUMERO"
+
+  validar_primo:
+    runs-on: ubuntu-latest
+    needs: definir_numero
+    steps:
+      - name: Validar si el número es primo
+        run: |
+          NUMERO=${{ needs.definir_numero.outputs.numero }}
+          if [ $NUMERO -le 1 ]; then
+            echo "$NUMERO no es primo."
+            exit 1
+          fi
+          for (( i=2; i*i<=$NUMERO; i++ )); do
+            if [ $((NUMERO % i)) -eq 0 ]; then
+              echo "$NUMERO no es primo."
+              exit 1
+            fi
+          done
+          echo "$NUMERO es primo."
+
+  comparar_nombre:
+    runs-on: ubuntu-latest
+    needs: validar_primo
+    steps:
+      - name: Comparar nombre con Venus
+        run: |
+          NOMBRE="Nefertiti"
+          if [ "$NOMBRE" = "Venus" ]; then
+            echo "El nombre es Venus."
+          else
+            echo "El nombre no es Venus, es $NOMBRE."
+          fi
