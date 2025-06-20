@@ -9,9 +9,17 @@ jobs:
     steps:
       - name: Sumar dos números
         run: |
-          NUM1=5
-          NUM2=10
-          SUMA=$((NUM1 + NUM2))
-          echo "La suma de $NUM1 y $NUM2 es: $SUMA"
+          NUM1=4
+          NUM2=4
+          RESULTADO=$((NUM1 + NUM2))
+          echo "La suma de $NUM1 y $NUM2 es: $RESULTADO"
+      - name: Comparación de resultados
+        run: |
+          if [ $RESULTADO -eq 10 ]; then
+            echo "El resultado $RESULTADO es menor o igual a 10."
+          else
+            echo "El resultado $RESULTADO es mayor 10."
+          fi
+          
 
           
