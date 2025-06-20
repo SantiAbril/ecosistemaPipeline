@@ -54,21 +54,21 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       edad_formato: ${{ steps.calcular.outputs.edad_formato }}
-      edad_años: ${{ steps.calcular.outputs.edad_años }}
+      edad_anios: ${{ steps.calcular.outputs.edad_anios }}
     steps:
       - name: Calcular edad
         id: calcular
         run: |
           DIA_NAC=${{ inputs.dia }}
           MES_NAC=${{ inputs.mes }}
-          AÑO_NAC=${{ inputs.anio }}
+          ANIO_NAC=${{ inputs.anio }}
 
           FECHA_ACTUAL=$(date +%Y-%m-%d)
-          AÑO_ACTUAL=$(date +%Y)
+          ANIO_ACTUAL=$(date +%Y)
           MES_ACTUAL=$(date +%m)
           DIA_ACTUAL=$(date +%d)
 
-          EDAD_AÑOS=$((AÑOS_ACTUAL - AÑOS_NAC))
+          EDAD_ANIOS=$((ANIO_ACTUAL - ANIO_NAC))
           EDAD_MESES=$((MES_ACTUAL - MES_NAC))
           EDAD_DIAS=$((DIA_ACTUAL - DIA_NAC))
 
@@ -78,15 +78,15 @@ jobs:
           fi
 
           if [ $EDAD_MESES -lt 0 ]; then
-            EDAD_AÑOS=$((EDAD_AÑOS - 1))
+            EDAD_ANIOS=$((EDAD_ANIOS - 1))
             EDAD_MESES=$((EDAD_MESES + 12))
           fi
 
-          FORMATO="${EDAD_AÑOS} años, ${EDAD_MESES} meses, ${EDAD_DIAS} días"
+          FORMATO="${EDAD_ANIOS} años, ${EDAD_MESES} meses, ${EDAD_DIAS} días"
           echo "Edad calculada: $FORMATO"
 
           echo "edad_formato=$FORMATO" >> "$GITHUB_OUTPUT"
-          echo "edad_años=$EDAD_AÑOS" >> "$GITHUB_OUTPUT"
+          echo "edad_anios=$EDAD_ANIOS" >> "$GITHUB_OUTPUT"
 
   clasificacion:
     name: Clasificar etapa de vida
@@ -95,7 +95,7 @@ jobs:
     steps:
       - name: Determinar etapa
         run: |
-          EDAD=${{ needs.calculo_edad.outputs.edad_años }}
+          EDAD=${{ needs.calculo_edad.outputs.edad_anios }}
           FORMATO="${{ needs.calculo_edad.outputs.edad_formato }}"
           echo "Edad recibida: $FORMATO"
 
