@@ -25,8 +25,8 @@ on:
  push:
   branches:
     - test/*
-    #- feature/ecosistemapipeline
-
+    - feature/ecosistemapipeline
+    
   workflow_dispatch:
     inputs:
       dia:
@@ -59,9 +59,9 @@ jobs:
       - name: Calcular edad
         id: calcular
         run: |
-          DIA_NAC=${{ inputs.dia }}
-          MES_NAC=${{ inputs.mes }}
-          ANIO_NAC=${{ inputs.anio }}
+          DIA_NAC= 02
+          MES_NAC= 10
+          ANIO_NAC= 1995
 
           FECHA_ACTUAL=$(date +%Y-%m-%d)
           ANIO_ACTUAL=$(date +%Y)
