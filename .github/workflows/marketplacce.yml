@@ -31,4 +31,5 @@ jobs:
      - name: Carga de Artefacto
        uses: actions/upload-artifact@v4
        with:
-         name: archivo-json     
+         name: archivo-json
+         path: /home/runner/work/ecosistemaPipeline/ecosistemaPipeline/archivo.json
