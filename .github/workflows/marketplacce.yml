@@ -42,3 +42,8 @@ jobs:
        run: |
          echo "Ruta del archivo JSON: ${{ github.workspace }}/archivo2.json"
          echo "Ruta del directorio de trabajo: ${{ github.workspace }}"
+     - name: Carga de Artefacto
+       uses: actions/upload-artifact@v4
+       with:
+         name: archivo2-json
+         path: /home/runner/work/ecosistemaPipeline/ecosistemaPipeline/archivo2.json
