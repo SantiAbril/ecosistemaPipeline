@@ -24,6 +24,10 @@ jobs:
        with:
           json: '{"name": "pipelines","activity": 3,"module": 2,"isRequired": false}'
           filename: 'archivo.json'
+     - name: Mostar rutas
+       run: |
+         echo "Ruta del archivo JSON: ${{ github.workspace }}/archivo.json"
+         echo "Ruta del directorio de trabajo: ${{ github.workspace }}"     
      - name: Carga de Artefacto
        uses: actions/upload-artifact@v4
        with:
