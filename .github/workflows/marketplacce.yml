@@ -33,3 +33,12 @@ jobs:
        with:
          name: archivo-json
          path: /home/runner/work/ecosistemaPipeline/ecosistemaPipeline/archivo.json
+     - name: Convertir archivo a JSON desde Secretos
+       uses: jsdaniell/create-json@v1.2.3
+       with:
+        name: "archivo2.json"
+        json: ${{ secrets.ARCHIVO }}
+     - name: Mostar rutas
+       run: |
+         echo "Ruta del archivo JSON: ${{ github.workspace }}/archivo2.json"
+         echo "Ruta del directorio de trabajo: ${{ github.workspace }}"
