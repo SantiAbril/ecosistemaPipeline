@@ -24,3 +24,7 @@ jobs:
        with:
           json: '{"name": "pipelines","activity": 3,"module": 2,"isRequired": false}'
           filename: 'archivo.json'
+     - name: Carga de Artefacto
+       uses: actions/upload-artifact@v4
+       with:
+         name: archivo-json     
