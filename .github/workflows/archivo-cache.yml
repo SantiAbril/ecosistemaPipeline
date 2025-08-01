@@ -1,0 +1,35 @@
+name: convertir-texto-a-json
+
+on:
+  push:
+    branches:
+      - feature/*
+
+jobs:
+  convertir-texto:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restaurar caché del archivo JSON
+        id: cache-json
+        uses: actions/cache@v4
+        with:
+          path: archivo.json
+          key: json-file-v1
+
+      - name: Generar archivo JSON (solo si no está en cache)
+        if: steps.cache-json.outputs.cache-hit != 'true'
+        uses: devops-actions/json-to-file@v1.0.0
+        with:
+          json: '{"name": "pipelines","activity": 3,"module": 2,"isRequired": false}'
+          filename: 'archivo.json'
+
+      - name: Mostrar rutas
+        run: |
+          echo "Ruta del archivo JSON: ${{ github.workspace }}/archivo.json"
+          echo "Ruta del directorio de trabajo: ${{ github.workspace }}"
+
+      - name: Cargar artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: archivo-json
+          path: archivo.json
