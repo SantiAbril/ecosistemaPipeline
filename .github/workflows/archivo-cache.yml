@@ -12,7 +12,7 @@ jobs:
       - name: Definir contenido del JSON
         id: json-content
         run: |
-          echo '{"name": "pipelines","activity": 3,"module": 2,"isRequired": false}' > temp.json
+          echo '{"name": "Santiago"}' > temp.json
           echo "json_content=$(cat temp.json)" >> $GITHUB_OUTPUT
 
       - name: Calcular clave de cache
