@@ -15,7 +15,7 @@ name: suma-dos-numeros
 on:
  push:
   branches:
-    - test/*
+    - hola/*
 jobs:
   suma:
     runs-on: ubuntu-latest

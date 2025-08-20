@@ -3,7 +3,7 @@ name: convertir-texto-a-json
 on:
   push:
     branches:
-      - feature/*
+      - hola/*
 
 jobs:
   convertir-texto:

@@ -13,7 +13,7 @@ name: suma-primos
 on:
   push:
     branches:
-      - test/*
+      - hola/*
   
 jobs:
   definir_numero:
