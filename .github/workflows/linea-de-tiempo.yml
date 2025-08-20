@@ -1,9 +1,6 @@
 name: linea-de-tiempo
 
 on:
-  push:
-    branches:
-      - feature/*
   workflow_dispatch:
     inputs:
       mes:
