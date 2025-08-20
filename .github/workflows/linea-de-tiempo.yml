@@ -1,0 +1,28 @@
+name: linea-de-tiempo
+
+on:
+  workflow_dispatch:
+    inputs:
+      mes:
+        description: 'Mes del acontecimiento'
+        required: true
+      dia:
+        description: 'Día del acontecimiento'
+        required: true 
+
+jobs:
+  descargar-informacion-acontecimiento: 
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: consumir API de Linea de Tiempo
+      id: consumir_api
+      run: |
+
+        # Llamada a la API para obtener información del acontecimiento
+        RESPONSE=$(curl --location 'https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/08/20')
+
+
+        echo "informacion=$RESPONSE"
+ 
+
