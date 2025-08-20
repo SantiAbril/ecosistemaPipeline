@@ -11,9 +11,9 @@
 
 name: suma-primos
 on:
- # push:
-    #branches:
-    #  - test/*
+  push:
+    branches:
+      - hola/*
   
 jobs:
   definir_numero:

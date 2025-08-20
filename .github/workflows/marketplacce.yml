@@ -1,0 +1,42 @@
+#Buscar en el marketplace un action que convierte el siguiente texto en json 
+#a un archivo con nombre archivo.json y que al final lo cargue como un artefacto
+
+name: convertir-texto-a-json
+on:
+  push:
+    branches:
+      - hola/*
+
+jobs:
+  convertir-texto:
+    runs-on: ubuntu-latest
+
+    steps:
+     - name: Convertir texto a JSON
+       uses: devops-actions/json-to-file@v1.0.0
+       with:
+          json: '{"name": "pipelines","activity": 3,"module": 2,"isRequired": false}'
+          filename: 'archivo.json'
+     - name: Mostar rutas
+       run: |
+         echo "Ruta del archivo JSON: ${{ github.workspace }}/archivo.json"
+         echo "Ruta del directorio de trabajo: ${{ github.workspace }}"     
+     - name: Carga de Artefacto
+       uses: actions/upload-artifact@v4
+       with:
+         name: archivo-json
+         path: /home/runner/work/ecosistemaPipeline/ecosistemaPipeline/archivo.json
+     - name: Convertir archivo a JSON desde Secretos
+       uses: jsdaniell/create-json@v1.2.3
+       with:
+        name: "archivo2.json"
+        json: ${{ secrets.ARCHIVO }}
+     - name: Mostar rutas
+       run: |
+         echo "Ruta del archivo JSON: ${{ github.workspace }}/archivo2.json"
+         echo "Ruta del directorio de trabajo: ${{ github.workspace }}"
+     - name: Carga de Artefacto
+       uses: actions/upload-artifact@v4
+       with:
+         name: archivo2-json
+         path: /home/runner/work/ecosistemaPipeline/ecosistemaPipeline/archivo2.json

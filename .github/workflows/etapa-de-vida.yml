@@ -22,6 +22,9 @@
 name: calcular-edad-y-etapa-de-la-vida
 
 on:
+  push:
+    branches:
+      - hola/*
   workflow_dispatch:
     inputs:
       dia:
