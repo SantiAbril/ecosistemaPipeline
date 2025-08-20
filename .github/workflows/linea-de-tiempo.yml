@@ -3,7 +3,7 @@ name: linea-de-tiempo
 on:
   push:
     branches:
-      - features/*
+      - feature/*
   workflow_dispatch:
     inputs:
       mes:
