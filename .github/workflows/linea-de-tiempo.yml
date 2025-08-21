@@ -32,7 +32,7 @@ jobs:
           LANGUAGE: ${{ vars.LANG }}
 
       - name: Convertir HTML a PDF
-        uses: peter-evans/html-to-pdf@v1
+        uses: markwilson/html2pdf@v1.0
         with:
           htmlFile: acontecimiento.html
           outputFile: acontecimiento.pdf
