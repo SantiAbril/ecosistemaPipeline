@@ -19,9 +19,10 @@ jobs:
         id: consumir_api
         run: |
           # Llamada a la API para obtener información del acontecimiento
-          RESPONSE=$(curl --location "https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/$MES/$DIA")
+          RESPONSE=$(curl --location "https://api.wikimedia.org/feed/v1/wikipedia/$IDIOMA/onthisday/all/$MES/$DIA")
           
           echo "informacion=$RESPONSE"
         env:
           MES: ${{ github.event.inputs.mes }}
           DIA: ${{ github.event.inputs.dia }}
+          IDIOMA: ${{ vars.IDIOMA }}
