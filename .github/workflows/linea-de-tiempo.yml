@@ -32,7 +32,7 @@ jobs:
           LANGUAGE: ${{ vars.LANG }}
 
       - name: Convertir HTML a PDF
-        uses: fifsky/html-to-pdf-action@v0.1
+        uses: peter-evans/html-to-pdf@v1
         with:
           htmlFile: acontecimiento.html
           outputFile: acontecimiento.pdf
