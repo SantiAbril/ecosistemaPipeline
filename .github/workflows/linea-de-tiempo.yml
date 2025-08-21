@@ -26,7 +26,6 @@ jobs:
         id: consumir_api
         run: |
           RESPONSE=$(curl --silent --location "https://api.wikimedia.org/feed/v1/wikipedia/$LANGUAGE/onthisday/all/$MONTH/$DAY")
-
           mkdir -p matrix
           echo "$RESPONSE" | jq -c --arg DAY "$DAY" --arg MONTH "$MONTH" \
             '.selected[] | {url: .pages[0].content_urls.desktop.page, title: .pages[0].title, day: $DAY, month: $MONTH}' \
@@ -35,7 +34,7 @@ jobs:
       - name: Guardar eventos para matrix
         id: set_matrix
         run: |
-          JSON=$(cat matrix/eventos.json | jq -s -c '.')
+          JSON=$(jq -s -c '.' matrix/eventos.json)
           echo "eventos=$JSON" >> $GITHUB_OUTPUT
 
   generar-pdfs:
@@ -53,10 +52,13 @@ jobs:
           echo "FILE_NAME=$FILE_NAME" >> $GITHUB_ENV
 
       - name: Convertir URL a PDF
-        uses: jasongitmail/url-to-pdf@v1
+        uses: misaelnieto/web_to_pdf_action@master
         with:
-          url: ${{ matrix.evento.url }}
-          output: ${{ env.FILE_NAME }}.pdf
+          webPageURL: ${{ matrix.evento.url }}
+          outputFile: ${{ env.FILE_NAME }}.pdf
+          usePuppeteer: true
+          useScreen: true
+          pdfOptions: '{"format": "A4", "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}'
 
       - name: Subir PDF como artefacto
         uses: actions/upload-artifact@v4
