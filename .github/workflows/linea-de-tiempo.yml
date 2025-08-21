@@ -13,16 +13,35 @@ on:
 jobs:
   descargar-informacion-acontecimiento:
     runs-on: ubuntu-latest
-
     steps:
-      - name: consumir API de Linea de Tiempo
+      - name: Consumir API de Línea de Tiempo
         id: consumir_api
         run: |
           # Llamada a la API para obtener información del acontecimiento
-          RESPONSE=$(curl --location "https://api.wikimedia.org/feed/v1/wikipedia/$IDIOMA/onthisday/all/$MES/$DIA")
+          RESPONSE=$(curl --silent --location "https://api.wikimedia.org/feed/v1/wikipedia/$LANGUAGE/onthisday/all/$MONTH/$DAY")
           
           echo "informacion=$RESPONSE"
+
+          # Guardar la respuesta en archivo HTML
+          echo "<html><body><pre>$RESPONSE</pre></body></html>" > acontecimiento.html
+
+          echo "Archivo HTML generado: acontecimiento.html"
         env:
-          MES: ${{ github.event.inputs.mes }}
-          DIA: ${{ github.event.inputs.dia }}
-          IDIOMA: ${{ vars.IDIOMA }}
+          MONTH: ${{ github.event.inputs.mes }}
+          DAY: ${{ github.event.inputs.dia }}
+          LANGUAGE: ${{ vars.LANG }}
+
+      - name: Convertir HTML a PDF
+        uses: fifsky/html-to-pdf-action@v0.1
+        with:
+          htmlFile: acontecimiento.html
+          outputFile: acontecimiento.pdf
+
+      - name: Subir artefactos (HTML y PDF)
+        uses: actions/upload-artifact@v4
+        with:
+          name: acontecimiento-${{ github.event.inputs.dia }}-${{ github.event.inputs.mes }}
+          path: |
+            acontecimiento.html
+            acontecimiento.pdf
+          retention-days: 1
