@@ -34,7 +34,9 @@ jobs:
 
       - name: Guardar eventos para matrix
         id: set_matrix
-        run: echo "eventos=$(cat matrix/eventos.json | jq -s '.')" >> $GITHUB_OUTPUT
+        run: |
+          JSON=$(cat matrix/eventos.json | jq -s -c '.')
+          echo "eventos=$JSON" >> $GITHUB_OUTPUT
 
   generar-pdfs:
     needs: preparar-eventos
