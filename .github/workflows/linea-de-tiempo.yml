@@ -38,6 +38,7 @@ jobs:
           echo "$RESPONSE" | jq -c --arg DAY "$DAY" --arg MONTH "$MONTH" \
             '.selected[] | {url: .pages[0].content_urls.desktop.page, title: .pages[0].title, day: $DAY, month: $MONTH}' \
             > matrix/eventos.json
+          echo "JSON Response=$RESPONSE"
 
       - name: Guardar eventos para matrix
         id: set_matrix
