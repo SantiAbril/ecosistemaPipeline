@@ -45,12 +45,21 @@ jobs:
           # Crear lista de eventos para matrix
           mkdir -p matrix
           echo "$RESPONSE" | jq -c '.selected[] | {url: .pages[0].content_urls.desktop.page, title: .pages[0].title}' > matrix/eventos.json
-          EVENTOS_JSON=$(cat matrix/eventos.json | jq -s '.')
-          echo "eventos=$EVENTOS_JSON" >> $GITHUB_OUTPUT
+          
+          # Compactar el JSON en una sola línea y guardarlo en el output
+          EVENTOS_JSON=$(jq -c -s '.' matrix/eventos.json)
+          
+          echo "eventos<<EOF" >> $GITHUB_OUTPUT
+          echo "$EVENTOS_JSON" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Guardar eventos para matrix
         id: set_matrix
-        run: echo "eventos=$(cat matrix/eventos.json | jq -s '.')" >> $GITHUB_OUTPUT
+        run: |
+          EVENTOS_JSON=$(jq -c -s '.' matrix/eventos.json)
+          echo "eventos<<EOF" >> $GITHUB_OUTPUT
+          echo "$EVENTOS_JSON" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
   generar-pdfs:
     needs: preparar-eventos
@@ -62,7 +71,6 @@ jobs:
     steps:
       - name: Preparar nombre de archivo
         run: |
-          # Reemplaza espacios por guiones bajos en el título
           FILE_NAME="${{ env.MONTH }}-${{ env.DAY }}-$(echo '${{ matrix.evento.title }}' | tr ' ' '_')"
           echo "FILE_NAME=$FILE_NAME" >> $GITHUB_ENV
 
