@@ -32,10 +32,12 @@ jobs:
           LANGUAGE: ${{ vars.LANG }}
 
       - name: Convertir HTML a PDF
-        uses: markwilson/html2pdf@v1.0
+        uses: ntdesmond/html2pdf-action@v1
         with:
-          htmlFile: acontecimiento.html
-          outputFile: acontecimiento.pdf
+          path: ./acontecimiento.html
+          output: ./acontecimiento.pdf
+          options: |
+            {"format": "A4", "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}
 
       - name: Subir artefactos (HTML y PDF)
         uses: actions/upload-artifact@v4
