@@ -14,22 +14,38 @@ jobs:
   descargar-informacion-acontecimiento:
     runs-on: ubuntu-latest
     steps:
+      - name: Configurar variables
+        run: |
+          echo "MONTH=${{ github.event.inputs.mes }}" >> $GITHUB_ENV
+          echo "DAY=${{ github.event.inputs.dia }}" >> $GITHUB_ENV
+          echo "LANGUAGE=${{ vars.LANG }}" >> $GITHUB_ENV
+
+      # Cache para la respuesta del API
+      - name: Cache respuesta API
+        id: cache_api
+        uses: actions/cache@v3
+        with:
+          path: cache_apis
+          key: linea-de-tiempo-${{ env.LANGUAGE }}-${{ env.DAY }}-${{ env.MONTH }}
+
       - name: Consumir API de Línea de Tiempo
         id: consumir_api
         run: |
-          # Llamada a la API para obtener información del acontecimiento
-          RESPONSE=$(curl --silent --location "https://api.wikimedia.org/feed/v1/wikipedia/$LANGUAGE/onthisday/all/$MONTH/$DAY")
+          # Verifica si ya existe cache
+          if [ -f cache_apis/response.json ]; then
+            echo "Usando cache existente"
+            cp cache_apis/response.json acontecimiento.html
+          else
+            echo "Cache no encontrado, consultando API..."
+            RESPONSE=$(curl --silent --location "https://api.wikimedia.org/feed/v1/wikipedia/$LANGUAGE/onthisday/all/$MONTH/$DAY")
           
-          echo "informacion=$RESPONSE"
+            # Guardar JSON en cache
+            mkdir -p cache_apis
+            echo "$RESPONSE" > cache_apis/response.json
 
-          # Guardar la respuesta en archivo HTML
-          echo "<html><body><pre>$RESPONSE</pre></body></html>" > acontecimiento.html
-
-          echo "Archivo HTML generado: acontecimiento.html"
-        env:
-          MONTH: ${{ github.event.inputs.mes }}
-          DAY: ${{ github.event.inputs.dia }}
-          LANGUAGE: ${{ vars.LANG }}
+            # Crear archivo HTML para PDF
+            echo "<html><body><pre>$RESPONSE</pre></body></html>" > acontecimiento.html
+          fi
 
       - name: Convertir HTML a PDF
         uses: ntdesmond/html2pdf-action@v1
