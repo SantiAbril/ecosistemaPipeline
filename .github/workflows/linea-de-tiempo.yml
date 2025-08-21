@@ -22,7 +22,15 @@ jobs:
           echo "DAY=${{ github.event.inputs.dia }}" >> $GITHUB_ENV
           echo "LANGUAGE=${{ vars.LANG }}" >> $GITHUB_ENV
 
+      - name: Restaurar cache de API
+        id: cache_api
+        uses: actions/cache@v4
+        with:
+          path: matrix
+          key: eventos-${{ env.LANGUAGE }}-${{ env.MONTH }}-${{ env.DAY }}
+
       - name: Consumir API de Línea de Tiempo
+        if: steps.cache_api.outputs.cache-hit != 'true'
         id: consumir_api
         run: |
           RESPONSE=$(curl --silent --location "https://api.wikimedia.org/feed/v1/wikipedia/$LANGUAGE/onthisday/all/$MONTH/$DAY")
