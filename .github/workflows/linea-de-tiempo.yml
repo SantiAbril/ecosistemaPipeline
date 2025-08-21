@@ -22,44 +22,19 @@ jobs:
           echo "DAY=${{ github.event.inputs.dia }}" >> $GITHUB_ENV
           echo "LANGUAGE=${{ vars.LANG }}" >> $GITHUB_ENV
 
-      - name: Cache respuesta API
-        id: cache_api
-        uses: actions/cache@v3
-        with:
-          path: cache_apis
-          key: linea-de-tiempo-${{ env.LANGUAGE }}-${{ env.DAY }}-${{ env.MONTH }}
-
       - name: Consumir API de Línea de Tiempo
         id: consumir_api
         run: |
-          mkdir -p cache_apis
-          if [ -f cache_apis/response.json ]; then
-            echo "Usando cache existente"
-            RESPONSE=$(cat cache_apis/response.json)
-          else
-            echo "Cache no encontrado, consultando API..."
-            RESPONSE=$(curl --silent --location "https://api.wikimedia.org/feed/v1/wikipedia/$LANGUAGE/onthisday/all/$MONTH/$DAY")
-            echo "$RESPONSE" > cache_apis/response.json
-          fi
+          RESPONSE=$(curl --silent --location "https://api.wikimedia.org/feed/v1/wikipedia/$LANGUAGE/onthisday/all/$MONTH/$DAY")
 
-          # Crear lista de eventos para matrix
           mkdir -p matrix
-          echo "$RESPONSE" | jq -c '.selected[] | {url: .pages[0].content_urls.desktop.page, title: .pages[0].title}' > matrix/eventos.json
-          
-          # Compactar el JSON en una sola línea y guardarlo en el output
-          EVENTOS_JSON=$(jq -c -s '.' matrix/eventos.json)
-          
-          echo "eventos<<EOF" >> $GITHUB_OUTPUT
-          echo "$EVENTOS_JSON" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "$RESPONSE" | jq -c --arg DAY "$DAY" --arg MONTH "$MONTH" \
+            '.selected[] | {url: .pages[0].content_urls.desktop.page, title: .pages[0].title, day: $DAY, month: $MONTH}' \
+            > matrix/eventos.json
 
       - name: Guardar eventos para matrix
         id: set_matrix
-        run: |
-          EVENTOS_JSON=$(jq -c -s '.' matrix/eventos.json)
-          echo "eventos<<EOF" >> $GITHUB_OUTPUT
-          echo "$EVENTOS_JSON" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+        run: echo "eventos=$(cat matrix/eventos.json | jq -s '.')" >> $GITHUB_OUTPUT
 
   generar-pdfs:
     needs: preparar-eventos
@@ -71,16 +46,15 @@ jobs:
     steps:
       - name: Preparar nombre de archivo
         run: |
-          FILE_NAME="${{ env.MONTH }}-${{ env.DAY }}-$(echo '${{ matrix.evento.title }}' | tr ' ' '_')"
+          SANITIZED_TITLE=$(echo "${{ matrix.evento.title }}" | tr ' ' '_' | tr -d '\"')
+          FILE_NAME="${{ matrix.evento.month }}-${{ matrix.evento.day }}-${SANITIZED_TITLE}"
           echo "FILE_NAME=$FILE_NAME" >> $GITHUB_ENV
 
       - name: Convertir URL a PDF
-        uses: ntdesmond/html2pdf-action@v1
+        uses: jasongitmail/url-to-pdf@v1
         with:
           url: ${{ matrix.evento.url }}
           output: ${{ env.FILE_NAME }}.pdf
-          options: |
-            {"format": "A4", "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}
 
       - name: Subir PDF como artefacto
         uses: actions/upload-artifact@v4
