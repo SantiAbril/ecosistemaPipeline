@@ -11,8 +11,10 @@ on:
         required: true
 
 jobs:
-  descargar-informacion-acontecimiento:
+  preparar-eventos:
     runs-on: ubuntu-latest
+    outputs:
+      eventos: ${{ steps.set_matrix.outputs.eventos }}
     steps:
       - name: Configurar variables
         run: |
@@ -20,7 +22,6 @@ jobs:
           echo "DAY=${{ github.event.inputs.dia }}" >> $GITHUB_ENV
           echo "LANGUAGE=${{ vars.LANG }}" >> $GITHUB_ENV
 
-      # Cache para la respuesta del API
       - name: Cache respuesta API
         id: cache_api
         uses: actions/cache@v3
@@ -31,35 +32,44 @@ jobs:
       - name: Consumir API de Línea de Tiempo
         id: consumir_api
         run: |
-          # Verifica si ya existe cache
+          mkdir -p cache_apis
           if [ -f cache_apis/response.json ]; then
             echo "Usando cache existente"
-            cp cache_apis/response.json acontecimiento.html
+            RESPONSE=$(cat cache_apis/response.json)
           else
             echo "Cache no encontrado, consultando API..."
             RESPONSE=$(curl --silent --location "https://api.wikimedia.org/feed/v1/wikipedia/$LANGUAGE/onthisday/all/$MONTH/$DAY")
-          
-            # Guardar JSON en cache
-            mkdir -p cache_apis
             echo "$RESPONSE" > cache_apis/response.json
-
-            # Crear archivo HTML para PDF
-            echo "<html><body><pre>$RESPONSE</pre></body></html>" > acontecimiento.html
           fi
 
-      - name: Convertir HTML a PDF
+          # Crear lista de eventos para matrix
+          echo "$RESPONSE" | jq -c '.selected[] | {url: .pages[0].content_urls.desktop.page, title: .pages[0].title}' > eventos.json
+          EVENTOS_JSON=$(cat eventos.json | jq -s '.')
+          echo "eventos=$EVENTOS_JSON" >> $GITHUB_OUTPUT
+
+      - name: Guardar eventos para matrix
+        id: set_matrix
+        run: echo "eventos=$(cat eventos.json | jq -s '.')" >> $GITHUB_OUTPUT
+
+  generar-pdfs:
+    needs: preparar-eventos
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        evento: ${{fromJSON(needs.preparar-eventos.outputs.eventos)}}
+    steps:
+      - name: Convertir URL a PDF
         uses: ntdesmond/html2pdf-action@v1
         with:
-          path: ./acontecimiento.html
-          output: ./acontecimiento.pdf
+          url: ${{ matrix.evento.url }}
+          output: "./${{ env.MONTH }}-${{ env.DAY }}-${{ matrix.evento.title | replace(' ','_') }}.pdf"
           options: |
             {"format": "A4", "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}
 
-      - name: Subir artefactos (HTML y PDF)
+      - name: Subir PDF como artefacto
         uses: actions/upload-artifact@v4
         with:
-          name: acontecimiento-${{ github.event.inputs.dia }}-${{ github.event.inputs.mes }}
-          path: |
-            acontecimiento.html
-            acontecimiento.pdf
+          name: ${{ env.MONTH }}-${{ env.DAY }}-${{ matrix.evento.title | replace(' ','_') }}
+          path: "./${{ env.MONTH }}-${{ env.DAY }}-${{ matrix.evento.title | replace(' ','_') }}.pdf"
           retention-days: 1
