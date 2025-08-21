@@ -43,13 +43,14 @@ jobs:
           fi
 
           # Crear lista de eventos para matrix
-          echo "$RESPONSE" | jq -c '.selected[] | {url: .pages[0].content_urls.desktop.page, title: .pages[0].title}' > eventos.json
-          EVENTOS_JSON=$(cat eventos.json | jq -s '.')
+          mkdir -p matrix
+          echo "$RESPONSE" | jq -c '.selected[] | {url: .pages[0].content_urls.desktop.page, title: .pages[0].title}' > matrix/eventos.json
+          EVENTOS_JSON=$(cat matrix/eventos.json | jq -s '.')
           echo "eventos=$EVENTOS_JSON" >> $GITHUB_OUTPUT
 
       - name: Guardar eventos para matrix
         id: set_matrix
-        run: echo "eventos=$(cat eventos.json | jq -s '.')" >> $GITHUB_OUTPUT
+        run: echo "eventos=$(cat matrix/eventos.json | jq -s '.')" >> $GITHUB_OUTPUT
 
   generar-pdfs:
     needs: preparar-eventos
@@ -57,20 +58,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        evento: ${{fromJSON(needs.preparar-eventos.outputs.eventos)}}
+        evento: ${{ fromJSON(needs.preparar-eventos.outputs.eventos) }}
     steps:
+      - name: Preparar nombre de archivo
+        run: |
+          # Reemplaza espacios por guiones bajos en el título
+          FILE_NAME="${{ env.MONTH }}-${{ env.DAY }}-$(echo '${{ matrix.evento.title }}' | tr ' ' '_')"
+          echo "FILE_NAME=$FILE_NAME" >> $GITHUB_ENV
+
       - name: Convertir URL a PDF
         uses: ntdesmond/html2pdf-action@v1
         with:
           url: ${{ matrix.evento.url }}
-          output: "./${{ env.MONTH }}-${{ env.DAY }}-${{ matrix.evento.title | replace(' ','_') }}.pdf"
+          output: ${{ env.FILE_NAME }}.pdf
           options: |
             {"format": "A4", "margin": {"top": "10mm", "left": "10mm", "right": "10mm", "bottom": "10mm"}}
 
       - name: Subir PDF como artefacto
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.MONTH }}-${{ env.DAY }}-${{ matrix.evento.title | replace(' ','_') }}
-          path: "./${{ env.MONTH }}-${{ env.DAY }}-${{ matrix.evento.title | replace(' ','_') }}.pdf"
+          name: ${{ env.FILE_NAME }}
+          path: ${{ env.FILE_NAME }}.pdf
           retention-days: 1
-
