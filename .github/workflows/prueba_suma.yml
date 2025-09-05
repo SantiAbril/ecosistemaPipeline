@@ -1,18 +1,14 @@
-### Crear un workflow con extensión .yml que:
-# Se ejecute cuando se haga un pull request hacia una rama feature/
-# Sobre la versión de ubuntu más reciente
-# Un step en bash que sume 2 números y muestre el resultado
-# Que se ejecute los jueves a las 9:35 hora Colombia
- 
 name: Sumar 2 numeros
- 
+
 on:
   pull_request:
     branches:
-      - 'feature/**'
+      - main          # El PR debe ir hacia main
+    paths:
+      - '**'          # Escucha cambios en cualquier archivo
   schedule:
-    - cron: "35 14 * * 4"
- 
+    - cron: "35 14 * * 4"   # Jueves 9:35 AM (Colombia = UTC-5)
+
 jobs:
   sumar-numeros:
     name: Sumar dos numeros y mostrar resultado
@@ -23,6 +19,5 @@ jobs:
           A: 5
           B: 10
         run: |
-          resultado=$((A+B))
-          echo $resultado
-          
+          resultado=$(($A + $B))
+          echo "Resultado = $resultado"
